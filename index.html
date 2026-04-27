@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neo Santiago 2130 — La ciudad de los rotos</title>
+<style>
+/* ─────────────────────────────────────────────
+   VARIABLES & TOKENS
+───────────────────────────────────────────── */
+:root {
+  --bg:          #0e0e0e;
+  --bg-2:        #141414;
+  --bg-3:        #1a1a1a;
+  --surface:     #1e1e1e;
+  --border:      #2a2a2a;
+  --border-hi:   #3a3a3a;
+  --text:        #c8c4bc;
+  --text-dim:    #6e6a62;
+  --text-hi:     #e8e4dc;
+  --accent:      #8b2020;
+  --accent-soft: #5a1414;
+  --accent-glow: rgba(139,32,32,0.15);
+  --cold:        #1a2530;
+  --cold-text:   #4a6880;
+  --nav-h:       52px;
+  --max-prose:   680px;
+  --font-display: 'Palatino Linotype', 'Book Antiqua', Palatino, 'Times New Roman', serif;
+  --font-body:   Georgia, 'Times New Roman', serif;
+  --font-ui:     'Courier New', Courier, monospace;
+  --r:           2px;
+}
+
+[data-theme="light"] {
+  --bg:          #f5f2ec;
+  --bg-2:        #eeebe4;
+  --bg-3:        #e8e4dc;
+  --surface:     #faf7f2;
+  --border:      #d8d4cc;
+  --border-hi:   #bbb7b0;
+  --text:        #2c2820;
+  --text-dim:    #7a756c;
+  --text-hi:     #1a1612;
+  --accent:      #8b2020;
+  --accent-soft: #f0e8e8;
+  --accent-glow: rgba(139,32,32,0.08);
+  --cold:        #e8edf2;
+  --cold-text:   #3a5068;
+}
+
+/* ─────────────────────────────────────────────
+   RESET & BASE
+───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 17px;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.75;
+  transition: background 0.35s ease, color 0.35s ease;
+  min-height: 100vh;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ─────────────────────────────────────────────
+   SCROLLBAR
+───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
+
+/* ─────────────────────────────────────────────
+   NAVBAR
+───────────────────────────────────────────── */
+#navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  transition: background 0.35s ease, border-color 0.35s ease;
+}
+
+.nav-brand {
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  user-select: none;
+}
+
+.nav-brand span {
+  color: var(--accent);
+}
+
+.nav-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-nav {
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border: 1px solid var(--border-hi);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: var(--r);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-nav:hover {
+  border-color: var(--accent);
+  color: var(--text-hi);
+  background: var(--accent-glow);
+}
+
+/* ─────────────────────────────────────────────
+   COVER SECTION
+───────────────────────────────────────────── */
+#cover {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--nav-h) + 40px) 24px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle ruled-paper texture */
+#cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 27px,
+      var(--border) 27px,
+      var(--border) 28px
+    );
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+/* Vertical red margin line */
+#cover::after {
+  content: '';
+  position: absolute;
+  left: 72px;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: var(--accent);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.cover-inner {
+  max-width: 620px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.cover-year {
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 28px;
+  display: block;
+}
+
+.cover-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 7vw, 5.2rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text-hi);
+  margin-bottom: 0;
+}
+
+.cover-title-year {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+  font-weight: 400;
+  color: var(--accent);
+  display: block;
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.cover-rule {
+  width: 48px;
+  height: 1px;
+  background: var(--accent);
+  margin: 28px 0;
+}
+
+.cover-subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  margin-bottom: 24px;
+}
+
+.cover-author {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 48px;
+}
+
+.cover-tagline {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--text-dim);
+  border-left: 2px solid var(--accent);
+  padding-left: 16px;
+  margin-bottom: 52px;
+  line-height: 1.6;
+}
+
+.btn-primary {
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 14px 36px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--text-hi);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ─────────────────────────────────────────────
+   SINOPSIS
+───────────────────────────────────────────── */
+#sinopsis {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 80px 24px;
+  position: relative;
+}
+
+#sinopsis::before {
+  content: 'SINOPSIS';
+  position: absolute;
+  top: 28px;
+  right: 32px;
+  font-family: var(--font-ui);
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+  opacity: 0.4;
+}
+
+.sinopsis-inner {
+  max-width: var(--max-prose);
+  margin: 0 auto;
+}
+
+.sinopsis-label {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+  display: block;
+}
+
+.sinopsis-text {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--text);
+  font-style: italic;
+}
+
+.sinopsis-text p + p {
+  margin-top: 1.2em;
+}
+
+.sinopsis-footer {
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sinopsis-meta {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  line-height: 2;
+}
+
+/* ─────────────────────────────────────────────
+   ÍNDICE
+───────────────────────────────────────────── */
+#indice {
+  padding: 80px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.indice-inner {
+  max-width: var(--max-prose);
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 32px;
+  display: block;
+}
+
+.indice-grid {
+  display: grid;
+  gap: 2px;
+}
+
+.indice-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.indice-item:last-child {
+  border-bottom: none;
+}
+
+.indice-item::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%) scaleX(0);
+  width: 4px;
+  height: 24px;
+  background: var(--accent);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+
+.indice-item:hover::before {
+  transform: translateY(-50%) scaleX(1);
+}
+
+.indice-item:hover {
+  color: var(--text-hi);
+  padding-left: 8px;
+}
+
+.indice-num {
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.indice-dots {
+  flex: 1;
+  border-bottom: 1px dotted var(--border-hi);
+  margin: 0 12px;
+  margin-bottom: 4px;
+}
+
+.indice-title {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+/* ─────────────────────────────────────────────
+   ÁREA DE LECTURA
+───────────────────────────────────────────── */
+#lectura {
+  padding: 80px 24px 120px;
+}
+
+.lectura-inner {
+  max-width: var(--max-prose);
+  margin: 0 auto;
+}
+
+/* Chapter block */
+.capitulo {
+  margin-bottom: 100px;
+  scroll-margin-top: calc(var(--nav-h) + 32px);
+}
+
+.capitulo-header {
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.capitulo-num {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.capitulo-titulo {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 400;
+  color: var(--text-hi);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Prose */
+.prose {
+  font-size: 1rem;
+  line-height: 1.9;
+  color: var(--text);
+}
+
+.prose p {
+  margin-bottom: 1.3em;
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* First paragraph of chapter — drop cap */
+.prose .first-para::first-letter {
+  font-family: var(--font-display);
+  font-size: 3.4em;
+  line-height: 0.8;
+  float: left;
+  margin-right: 6px;
+  margin-top: 4px;
+  color: var(--accent);
+  font-weight: 400;
+}
+
+/* Dialog lines */
+.prose .dialogo {
+  margin: 0.2em 0 0.2em 0;
+  padding-left: 0;
+  font-style: normal;
+  color: var(--text);
+}
+
+/* Italic blocks (oracle, internal) */
+.prose .italico {
+  font-style: italic;
+  color: var(--text-dim);
+  padding-left: 20px;
+  border-left: 2px solid var(--border-hi);
+  margin: 1.4em 0;
+}
+
+/* Chapter divider */
+.capitulo-sep {
+  text-align: center;
+  color: var(--text-dim);
+  letter-spacing: 0.4em;
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  margin: 60px 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.capitulo-sep::before,
+.capitulo-sep::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* List items inside prose */
+.prose .inciso {
+  padding-left: 24px;
+  position: relative;
+  color: var(--text);
+  margin-bottom: 0.8em;
+}
+
+.prose .inciso::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+/* ─────────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────────── */
+#footer {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  padding: 36px 24px;
+  text-align: center;
+}
+
+.footer-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.footer-status {
+  font-family: var(--font-ui);
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.footer-rule {
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+  margin: 16px auto;
+  opacity: 0.5;
+}
+
+/* ─────────────────────────────────────────────
+   BACK TO TOP / ÍNDICE FLOAT
+───────────────────────────────────────────── */
+#fab {
+  position: fixed;
+  bottom: 28px;
+  right: 24px;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+#fab.visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: all;
+}
+
+.fab-btn {
+  font-family: var(--font-ui);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 9px 14px;
+  border: 1px solid var(--border-hi);
+  background: var(--bg-2);
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: var(--r);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.fab-btn:hover {
+  border-color: var(--accent);
+  color: var(--text-hi);
+  background: var(--accent-glow);
+}
+
+/* ─────────────────────────────────────────────
+   PROGRESS BAR
+───────────────────────────────────────────── */
+#progress {
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: var(--accent);
+  z-index: 101;
+  transition: width 0.1s linear;
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .nav-brand { font-size: 0.55rem; letter-spacing: 0.1em; }
+  .btn-nav { padding: 5px 10px; font-size: 0.55rem; }
+  #cover::after { display: none; }
+  .sinopsis-footer { flex-direction: column; }
+  .indice-dots { display: none; }
+  .indice-num { min-width: 60px; }
+  .prose p { text-align: left; }
+}
+
+@media (min-width: 900px) {
+  .prose { font-size: 1.05rem; }
+}
+
+/* ─────────────────────────────────────────────
+   LOADING STATE — initial fade
+───────────────────────────────────────────── */
+body {
+  animation: bodyFade 0.5s ease both;
+}
+@keyframes bodyFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* smooth section transitions */
+section {
+  transition: background 0.35s ease;
+}
+</style>
+</head>
+<body data-theme="dark">
+
+<!-- Reading progress bar -->
+<div id="progress"></div>
+
+<!-- ─── NAVBAR ─── -->
+<nav id="navbar">
+  <span class="nav-brand">Neo Santiago <span>2130</span></span>
+  <div class="nav-controls">
+    <button class="btn-nav" onclick="scrollToSection('indice')">Índice</button>
+    <button class="btn-nav" id="themeBtn" onclick="toggleTheme()">Modo claro</button>
+  </div>
+</nav>
+
+<!-- ─── PORTADA ─── -->
+<section id="cover">
+  <div class="cover-inner">
+    <span class="cover-year">Chile — 2130</span>
+    <h1 class="cover-title">
+      Neo Santiago
+      <span class="cover-title-year">2130</span>
+    </h1>
+    <div class="cover-rule"></div>
+    <p class="cover-subtitle">La ciudad de los rotos</p>
+    <p class="cover-author">Diego Bastías Alfaro</p>
+    <blockquote class="cover-tagline">
+      «Santiago ya no pertenece a los humanos.»
+    </blockquote>
+    <a class="btn-primary" onclick="scrollToSection('lectura')">Comenzar lectura</a>
+  </div>
+</section>
+
+<!-- ─── SINOPSIS ─── -->
+<section id="sinopsis">
+  <div class="sinopsis-inner">
+    <span class="sinopsis-label">Sinopsis</span>
+    <div class="sinopsis-text">
+      <p>Santiago ya no suena como antes. No hay motores, ni voces, ni pasos apresurados cruzando las calles. Solo el crujir de ramas que nacen entre el concreto y el viento que se cuela entre edificios vacíos.</p>
+      <p>Bajo la ciudad, donde antes pasaban trenes llenos de gente, aún hay vida. Los llaman «Rotos». No por lo que son, sino por lo que queda de ellos. Los últimos chilenos nacidos en Chile que, luego de un fallido estallido social y de varios intentos de recuperar la soberanía de su pueblo, lograron establecer comunidades subterráneas en lo que fue la Línea 1 del Metro de Santiago.</p>
+      <p>En el año 2130, Santiago es un campo de ruinas dividido entre quienes obedecen a un gobierno mundial tecnológico, quienes viven en una burbuja de lujo eterno y quienes sobreviven bajo tierra, preservando la memoria de un país que el mundo prefirió olvidar.</p>
+    </div>
+    <div class="sinopsis-footer">
+      <div class="sinopsis-meta">
+        Diego Bastías Alfaro<br>
+        Novela — Primera edición<br>
+        2023
+      </div>
+      <div class="sinopsis-meta" style="text-align:right;">
+        Ficción distópica<br>
+        Ciencia ficción social<br>
+        Obra en desarrollo
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ÍNDICE ─── -->
+<section id="indice">
+  <div class="indice-inner">
+    <span class="section-label">Índice</span>
+    <nav class="indice-grid">
+      <a class="indice-item" onclick="scrollToSection('prologo')">
+        <span class="indice-num">—</span>
+        <span class="indice-dots"></span>
+        <span class="indice-title">Prólogo</span>
+      </a>
+      <a class="indice-item" onclick="scrollToSection('cap1')">
+        <span class="indice-num">Cap. I</span>
+        <span class="indice-dots"></span>
+        <span class="indice-title">La olvidada ciudad de Santiago</span>
+      </a>
+      <a class="indice-item" onclick="scrollToSection('cap2')">
+        <span class="indice-num">Cap. II</span>
+        <span class="indice-dots"></span>
+        <span class="indice-title">Bajo tierra</span>
+      </a>
+      <a class="indice-item" onclick="scrollToSection('cap3')">
+        <span class="indice-num">Cap. III</span>
+        <span class="indice-dots"></span>
+        <span class="indice-title">El gran apagón</span>
+      </a>
+      <a class="indice-item" onclick="scrollToSection('cap4')">
+        <span class="indice-num">Cap. IV</span>
+        <span class="indice-dots"></span>
+        <span class="indice-title">Cazar o ser cazado</span>
+      </a>
+      <a class="indice-item" onclick="scrollToSection('cap5')">
+        <span class="indice-num">Cap. V</span>
+        <span class="indice-dots"></span>
+        <span class="indice-title">La suerte del Roto</span>
+      </a>
+      <a class="indice-item" onclick="scrollToSection('cap6')">
+        <span class="indice-num">Cap. VI</span>
+        <span class="indice-dots"></span>
+        <span class="indice-title">El peso de la superficie</span>
+      </a>
+      <a class="indice-item" onclick="scrollToSection('cap7')">
+        <span class="indice-num">Cap. VII</span>
+        <span class="indice-dots"></span>
+        <span class="indice-title">Sobre los hombros</span>
+      </a>
+      <a class="indice-item" onclick="scrollToSection('cap8')">
+        <span class="indice-num">Cap. VIII</span>
+        <span class="indice-dots"></span>
+        <span class="indice-title">El secreto de los sabios</span>
+      </a>
+      <a class="indice-item" onclick="scrollToSection('cap9')">
+        <span class="indice-num">Cap. IX</span>
+        <span class="indice-dots"></span>
+        <span class="indice-title">[ Por desarrollar ]</span>
+      </a>
+    </nav>
+  </div>
+</section>
+
+<!-- ─── LECTURA ─── -->
+<main id="lectura">
+  <div class="lectura-inner">
+
+    <!-- ── PRÓLOGO ── -->
+    <article class="capitulo" id="prologo">
+      <header class="capitulo-header">
+        <span class="capitulo-num">—</span>
+        <h2 class="capitulo-titulo">Prólogo</h2>
+      </header>
+      <div class="prose">
+        <p class="first-para">Santiago ya no suena como antes.</p>
+        <p>No hay motores, ni voces, ni pasos apresurados cruzando las calles.</p>
+        <p>Solo el crujir de ramas que nacen entre el concreto y el viento que se cuela entre edificios vacíos.</p>
+        <p>Bajo la ciudad, donde antes pasaban trenes llenos de gente, aún hay vida.</p>
+        <p>Los llaman «Rotos».</p>
+        <p>No por lo que son, sino por lo que queda de ellos.</p>
+        <p>Luego de un fallido estallido social y de varios intentos de recuperar por sus propias manos la soberanía de su pueblo.</p>
+        <p>Como si se tratase de una tribu, los últimos chilenos nacidos en Chile, quienes se llamaban a sí mismos «Rotos», lograron establecer comunidades subterráneas en lo que era, antiguamente, según las escrituras y revistas olvidadas de papel viejo y ahumado, la L1 o Línea 1.</p>
+        <p>Un conjunto de estaciones que hace cien años eran el transporte diario de millones de personas que habitaban la superpoblada ciudad de Santiago.</p>
+        <p>Un espacio subterráneo que alberga diferentes tipos de grupos de resistencia pacífica y armada. La única regla: ser hijo de padre y madre chilenos, o haber nacido en Chile antes del gran apagón.</p>
+        <p>Los que se atrevieron a formar parte de este espacio conforman una extensa combinación de túneles por los cuales circulaban vagones de un servicio obsoleto a mediados de 2025. El deterioro y los constantes intentos de actos terroristas por parte de la TAM en el año 2045 obligaron a detener el servicio del Metro, siendo así una de las pérdidas más grandes del patrimonio de este moribundo país.</p>
+        <p>En 2043, y luego del asesinato de la primera senadora transexual, Emilia Schfeiser, los grupos progresistas lograron penetrar dos veces los muros establecidos en la ex calle Bandera.</p>
+        <p>Como si fuese una fortificación neomedieval, el perímetro que cerca el Palacio de Gobernanza Unida —ex Palacio Presidencial La Moneda— había sido recubierto con muros después de la toma de poder por parte de Naciones Unidas en 2033, a causa de tres plebiscitos en contra del pueblo chileno para modificar su carta de derechos como ciudadanos. Esto obligó a la organización mundial a tomarse el país a la fuerza, ya que ni los ciudadanos ni los políticos estaban de acuerdo con el plan fracasado de una agenda global en 2030.</p>
+        <p>Como si fuese una despedida a la democracia, la Organización de Naciones Unidas destituyó en junio de 2024 a Gabriel Boric Font, quien no había logrado establecer las bases finales para que el plan de agenda global 2030 fuese exitoso.</p>
+        <p>A causa de eso, en 2025 se pospusieron las elecciones presidenciales y se llamó a plebiscito directo para que, tramposa­mente, se diera el visto bueno a una agenda que terminaría con el país tal como lo conocían quienes vivían en la época del preglobalitarismo.</p>
+        <p>El pueblo chileno, conformado en un sesenta y cinco por ciento por extranjeros migrantes legales e ilegales con derecho a voto, y los «Rotos» o chilenos nacidos en Chile, votaron NO al Sistema de Desarrollo Sostenible para el Futuro (SDSF) propuesto por el diputado más joven de la cámara, Víctor Chanfreau nieto.</p>
+        <p>El joven Chanfreau, nieto del ex guerrillero del MIR en 1970, Víctor Chanfreau, ya apaciguado y con una disposición superior a la de su abuelo extinto en el levantamiento militar de 1973, propuso medidas drásticas para la implementación de una nueva agenda junto a la diputada Valentina Muñoz —ex representante de la juventud ODS de la ONU en 2022—, quien fue designada para llevar a cabo una serie de leyes propuestas por el ala más joven del progresismo de izquierda.</p>
+        <p>La planificación mundial ya estaba establecida. Pero la voluntad de un pueblo roto generó un escenario que jamás la Organización de Naciones Unidas pudo contener.</p>
+      </div>
+    </article>
+
+    <div class="capitulo-sep">· · ·</div>
+
+    <!-- ── CAPÍTULO I ── -->
+    <article class="capitulo" id="cap1">
+      <header class="capitulo-header">
+        <span class="capitulo-num">Capítulo I</span>
+        <h2 class="capitulo-titulo">La olvidada ciudad de Santiago</h2>
+      </header>
+      <div class="prose">
+        <p class="first-para">Santiago, el punto neurálgico del país en los últimos doscientos años. Catalogada en sus tiempos dorados como «la superciudad del continente hispanoamericano», se encuentra parcialmente habitable. El impacto de la naturaleza en los espacios abandonados ha generado un paisaje calmo, donde los ruidos más convencionales son el crujir de ramas podridas, el soplar del viento entre los árboles que nacen del concreto y, más de algún pájaro que ha logrado sobrevivir a pesar de la escasa flora y fauna que envuelve este olvidado lugar.</p>
+        <p>Como si se tratase de un portal a un reino subterráneo, las entradas a «la nueva ciudad de Santiago» o «la ciudad de los Rotos», como la llaman sus habitantes, están rebosadas de arbustos gigantes y escombros de una ciudad perdida en el tiempo.</p>
+        <p>El sistema de seguridad de estas fortificaciones, creadas de forma arcaica, estaba conformado por una serie de torretas con inteligencia artificial que, a base de una cámara de calor y reconocimiento facial, distinguían los rasgos mutados de los rasgos autóctonos de quienes habían nacido en Chile.</p>
+        <p>Estos sistemas de seguridad fueron robados en un asalto por parte de los Rotos a una estación de seguridad remota, y replicados con armamento y circuitos electrónicos fabricados casi como artesanías, debido al limitado poder de trabajo que tenían los pequeños grupos de resistencia subterránea.</p>
+        <p>A pesar de ser una ciudad en el olvido, existe un espacio exento de los desechos que este mismo produce. Desechos que llegan a parar a la ciudad en olvido.</p>
+        <p>No obstante, este espacio que existe por sí solo, como si de una entidad se tratase, era «El Valle»: una ciudad hipermoderna, con aspecto brutalista, donde habitaban aproximadamente dos millones y medio de personas conectadas mediante un implante subcutáneo en la zona frontal de la cabeza.</p>
+        <p>Estos humanos, despojados de todo dolor y de toda angustia, vivían en un estado casi de omnipresencia. Gente con vestiduras simples, cortes rectos, que encajaban perfectamente con la seriedad de cada uno de ellos.</p>
+        <p>«El Valle» consiste en una ciudadela construida luego de que los chilenos, ex empresarios y familias poderosas, decidieron crear un espacio privado donde vivir. Acomodados en el seno de una tecnología cada vez más intrínseca con el ser humano, los habitantes de este territorio carecían de enfermedades y algunos, ya carcomidos por el paso del tiempo, veían felices los hologramas proyectados por pantallas que algunos, a sus ciento cuarenta y cinco años, no alcanzaban a descubrir.</p>
+        <p>Muros protegidos por una seguridad casi pensante, un domo de cristales que proyectaba un archivo visual de un Santiago que ya no está.</p>
+        <p>El centro de Santiago, un lugar poco amigable, donde rige la ley de la selva. Drones automatizados merodeaban cada esquina de este moribundo lugar; los vagabundos y personas sin identificación habitaban este espacio, donde hace ya cincuenta años no hay control ni autoridades que hagan valer las leyes. Solo robots olvidados indicando qué no hacer y alertando sobre armas dotadas en las que nunca van a disparar.</p>
+        <p>Algunos semáforos aún funcionan y es posible escuchar los sonidos de aquellas esquinas donde transitaban personas que hoy, o viven bajo tierra, o descansan bajo ella.</p>
+        <p>Hay un solo lugar en el que rige la ley, y es en la Gobernanza de Naciones Unidas, ex Palacio Presidencial La Moneda. Desde la ex calle Bandera hasta la olvidada Estación Central —un lugar que en tiempos de Navidad era el tesoro brillante de una ciudad en decadencia— este gran terreno fue cercado con muros de concreto luego de la toma del país por parte de Naciones Unidas, ya que no se habían cumplido los objetivos como nación.</p>
+        <p>Este espacio fue tomado por asalto y aislado solo para residentes que estuviesen a favor de las reglas de Naciones Unidas. Ciudadanos obedientes que atendieran a toda petición por parte de sus gobernantes.</p>
+        <p>«Sí a todo» es el lema de quienes viven y gozan de la caridad absurda. Personas que han aceptado ser parte de la colonia chilena a favor de un plan mundial.</p>
+        <p>Esta ciudad albergaba a chilenos y extranjeros: una ciudad sustentable donde no estaba permitido andar en automóvil y donde las bicicletas eran gratis, estaban en cualquier lugar; solo debías subir y avanzar.</p>
+        <p>Este espacio está protegido por los temidos cascos morados, quienes habían sido anteriormente cascos azules. Una seguridad que no permitía el acercamiento de vagabundos o personas sin identificación del sistema UNO —sistema de reconocimiento de persona afiliada a los beneficios de la Organización de Naciones Unidas—.</p>
+        <p>El sistema UNO era una forma de controlar y abastecer a todos los ciudadanos del sector controlado por este organismo. UNO permitía saber dónde se encontraba cada ciudadano con cada latido que su corazón emitía, volviéndolos así una especie de sonar o GPS que controla todas las pequeñas formas de disidencia.</p>
+        <p>No existía forma de ser un ciudadano de este lugar y estar en contra de sus leyes.</p>
+        <p>Pero hoy, en 2130, los ciudadanos tienen prohibido comer carne, no pueden salir del territorio y son abastecidos de productos elaborados en fábricas gubernamentales que utilizan químicos para saborizar ingredientes que ya no existen.</p>
+        <p>Simulan carne de vaca con hormigas, grillos y otros insectos, siendo estos quienes producen las enfermedades tratadas hoy en la mayoría de hospitales apegados a la OMS (Organización Mundial de la Salud).</p>
+        <p>En resumen, Santiago es un lugar hostil y extinto, en el cual conviven personas en un vasto espacio vacío. Muchos decidieron vivir bajo tierra y desobedecer el plan global. Otros viven en una ilusión que pueden costear gracias a su fortuna amasada en otros tiempos. Y también hay quienes viven bajo el orden mundial de una organización que promete mantener al hombre bajo constante custodia, para así llevarlo a un falso redentor.</p>
+      </div>
+    </article>
+
+    <div class="capitulo-sep">· · ·</div>
+
+    <!-- ── CAPÍTULO II ── -->
+    <article class="capitulo" id="cap2">
+      <header class="capitulo-header">
+        <span class="capitulo-num">Capítulo II</span>
+        <h2 class="capitulo-titulo">Bajo tierra</h2>
+      </header>
+      <div class="prose">
+        <p class="first-para">Los primeros años de este nuevo hábitat fueron los más complejos, aunque la gente pudo acostumbrarse a la humedad.</p>
+        <p>El ruido del goteo continuo se volvía parte del silencio luego de horas de escuchar gota a gota golpear algún metal o el frío concreto de los túneles olvidados de estos hostiles pasadizos.</p>
+        <p>Muchos sabios, quienes llegaron a esconder su conocimiento en estos túneles, narran historias de un Chile que hoy no es más que relatos al calor de una fogata encendida en un barril de metal.</p>
+        <p>Si bien existen cuatro entradas a esta ciudad subterránea, ubicadas en diferentes puntos de la abandonada superficie, también pueden encontrarse pequeños túneles anexados que sirven de acceso a residentes que osan explorar el vasto vacío de los escombros que representan el enigmático declive de una ciudad majestuosa, la cual hoy está hecha polvo.</p>
+        <p>No es muy difícil entender por qué estos ciudadanos dejaron de pertenecer a la superficie. Poco a poco fueron alejándose de todo lo que pudiera vincularlos a un sistema de control mundial; por ende, detuvieron sus vidas digitales para así establecer el escape más desesperado ante una situación de la cual no se puede salir fácilmente.</p>
+        <p>Puede entenderse con esto que bajo tierra no está permitida la tecnología que pueda vincular la posición o los datos vitales de un ciudadano. Aquí no existen celulares, ni radios satelitales, ni GPS. Menos computadoras rastreables por el Gobierno Mundial. Tampoco existen medios de reproducir archivos digitales; a pesar de esto, y como si fuese un renacer de la era arcaica y análoga de la sociedad, las historias que se cuentan sobre un país que ya no está son transmitidas a los más jóvenes por tradición oral. Es decir, una historia que solo se conoce en el imaginario de niños y jóvenes que jamás vieron el Santiago que los abuelos cuentan mientras mueven las últimas cenizas de la fogata.</p>
+        <p>Aun así, es sabido que miles de archivos son acumulados en diferentes comunidades subterráneas, para que en algún momento estos puedan ser reproducidos y que los abuelos de los hijos de quienes habitaron aquí puedan conocer lo que ellos recuerdan.</p>
+        <p>La mayoría de ciudadanos se desplazan caminando entre túneles iluminados por antorchas y algunas luces conectadas a diferentes fuentes de electricidad, la cual es escasa, pero logra abastecer de luminosidad suficiente para vivir —o mejor dicho, «sobrevivir»— bajo tierra.</p>
+        <p>Los habitantes recorren una gran cantidad de kilómetros para abastecer e intercambiar víveres, ropas, libros viejos o herramientas necesarias para vivir.</p>
+        <p>Muchas madres llevan a sus hijos abultados como si se tratase de una carga más; estos asomaban sus cabezas desde pequeñas bolsas confeccionadas a mano, técnicas que conservaron de los antiguos vestigios de una sociedad que hoy parece ser solo un par de libros oxidados y manualidades que aprenden los más jóvenes.</p>
+        <p>El alimento era escaso, por ello muchas de estas «tribus subterráneas» caminan sin descanso por los estrechos túneles que conectan comunidades o mercados.</p>
+        <p>Conseguir carne era algo impensado en estos tiempos. Una fauna casi extinta y una restricción total a la industria cárnica o al faenamiento de animales no permitía divisar animales a menudo en la superficie de la ciudad.</p>
+        <p>No obstante, algunos osados jóvenes cazadores tienen la valentía suficiente como para salir a la superficie y llegar más allá de la ciudad, haciendo caminatas interminables, y luego de meses afuera, estos lograban volver al refugio subterráneo.</p>
+        <p>Aunque muy pocas veces se daba el que los jóvenes cazadores volvieran, cuando lo hacían eran recibidos entre cánticos, aplausos, abrazos y una extraña e improvisada forma de celebrar.</p>
+        <p class="dialogo">—¡Llegaron los cabros! —se escuchaba a lo lejos desde un túnel que conectaba dos comunidades.</p>
+        <p>Absolutamente todos dejaban de hacer sus labores y corrían a recibir a los sobrevivientes de una cacería extenuante, donde pocos son vistos regresando intactos por una recompensa no menor.</p>
+        <p>Los niños, entusiasmados, veían cómo entraban los jóvenes por las puertas de la antigua estación. Un olor extraño a vísceras y sangre empapaba las narices de los más nuevos, los que no habían visto jamás un pedazo de carne.</p>
+        <p>La celebración llevada a cabo contaba con múltiples platos preparados por las diferentes comunidades de resistencia. Ensaladas de verduras cultivadas en campos hidropónicos subterráneos: lechugas, papas, zapallos, pepinos, entre otros, eran cocinados en exquisitos platos. La comunidad entera estaba de fiesta; por ende, todo era de todos y ninguno de los habitantes debía quedarse sin comer.</p>
+        <p>Mientras los más jóvenes comían papas cocidas untadas en viejas recetas de un menjunje picante y pastas de ajo realizadas por las ancianas más sabias del lugar, los hombres, siempre juntos, faenaban los ejemplares recién llegados: dos corderos y una pequeña cría de caballo.</p>
+        <p>Bajo cánticos de agradecimiento comenzaron a despellejar y deslizar sus cuchillos por las tiernas carnes del potrillo.</p>
+        <p>La carne de caballo era almacenada y preservada bajo la antigua técnica andina del charqui: carne que originalmente era lavada y secada al sol junto a grandes cantidades de sal. Claramente, el sol fue sustituido por cámaras de luz artificial que secaban la carne, y la sal, un bien preciado en estos tiempos, era rescatada de pequeñas piedras formadas en algunos túneles subterráneos.</p>
+        <p>Mientras tanto, uno de los jóvenes alertó que uno de los corderos estaba moribundo aún. Los más adultos se miraron extrañados; uno de ellos largó a reír y abrazó al joven que nerviosamente sonreía.</p>
+        <p class="dialogo">—¡Ñachi! —gritó uno de los adultos.</p>
+        <p>Todos celebraron la gran noticia: a un cordero aún vivo se le iba a drenar la sangre por la garganta.</p>
+        <p>Las mujeres, que escucharon el grito de felicidad de sus hombres, corrieron a buscar el preciado cilantro y algunas cebollas cultivadas en los túneles para condimentar el alimento que para los más ancianos era sagrado y que restablece de fuerzas a todo guerrero.</p>
+        <p>Así es como la llegada de estos jóvenes trae más de una sorpresa y, a la vez, los convierte en hombres al haber sobrevivido al calor, el hambre y, sobre todo, por haber traído el ñachi.</p>
+        <p>Esta comida podría ser masticada al transformarse en una gelatina a causa de la coagulación de la sangre, o podría ser bebida en vasos directamente del cuello del animal.</p>
+        <p>Los jóvenes, quienes jamás habían probado la sangre de un cordero vivo, fueron invitados a compartir con los adultos, quienes les dieron a elegir si querían un vaso de esta ancestral preparación o preferían tomarlo como una jalea. Los jóvenes accedieron a beber la sangre, ya que venían sedientos del largo viaje. Se miraron antes de levantar el vaso y sonrieron, pues habían traído la alegría a un pueblo devastado desde lo profundo.</p>
+        <p>Un sorbo largo, amargo y espeso que les hacía entender que eran importantes dentro de estos oscuros túneles que llamaban hogar.</p>
+      </div>
+    </article>
+
+    <div class="capitulo-sep">· · ·</div>
+
+    <!-- ── CAPÍTULO III ── -->
+    <article class="capitulo" id="cap3">
+      <header class="capitulo-header">
+        <span class="capitulo-num">Capítulo III</span>
+        <h2 class="capitulo-titulo">El gran apagón</h2>
+      </header>
+      <div class="prose">
+        <p class="first-para">Las historias que cuentan los ancianos de este lugar nos internan en un pasado no muy lejano, donde aún podríamos decir que existía el «Antiguo Chile». Un lugar sobrepoblado y con un aura más grisácea de lo normal. Cuentan que un día se dio la orden de que todas las «naciones» afiliadas al plan de gobernanza mundial debían obedecer la siguiente lista de incisos:</p>
+        <p class="inciso">Eliminar el dinero físico y portarse al sistema de puntaje establecido por la ONU.</p>
+        <p class="inciso">Descomponer el sistema privado de conversaciones en todo tipo de medios y portar a todos a un gran sistema de comunicación centralizada, a causa de las inminentes resistencias creadas a partir de que la ONU tocó la faz de este país.</p>
+        <p class="inciso">Eliminar todo tipo de recurso escrito que aliente a la subversión por parte de los ciudadanos, en especial los libros de filosofía, música y arte.</p>
+        <p class="inciso">Restringir el acceso al libre comercio, eliminar cualquier tipo de comercio no establecido, tomando el espacio y transformándolo en un rincón más de la ONU.</p>
+        <p class="inciso">Restringir el acceso a internet y a cualquier medio de recopilación y descarga de archivos.</p>
+        <p class="inciso">Utilizar el sistema de monitoreo SONAR mediante el ritmo cardíaco de los ciudadanos. Esta era una de las órdenes que más complicaban a las resistencias, ya que consistía en inocularlos con metales y nanobots que pudiesen dar un estado real de salud, ubicación y pensamientos.</p>
+        <p>Una lista no menor que hizo eco en quienes se resistían a ser parte de un sistema globalitarista, donde la voluntad de quienes eran ciudadanos era prácticamente nula.</p>
+        <p>Este «apagón», como lo llamaron los ciudadanos de aquella época, fue el inicio del proceso más oscuro en la historia de Chile, estableciendo un quiebre más profundo que el ocurrido en 1973 con el alzamiento militar contra el sistema marxista.</p>
+        <p>Los ciudadanos comenzaron a desobedecer paulatinamente las reglas que para ellos eran «absurdas» y afectaban la libertad y soberanía casi extinta en esos tiempos.</p>
+        <p>Todo comenzó una tarde de mayo de 2047. Los ancianos no recuerdan la fecha exacta, por lo que es difuso saber con exactitud cuándo comenzó este suceso que logró destruir el concepto de sociedad tal como los habitantes de Santiago lo conocían.</p>
+        <p>Esa misma tarde fueron aceptados los protocolos de Gobernanza Mundial, los cuales fueron celebrados por una mínima parte de la sociedad, quienes aún no podían observar que estaban siendo utilizados.</p>
+        <p>Ancianos cuentan cómo ese día eliminaron todos sus celulares, arrojándolos en las cercanías de un casi desaparecido río Mapocho, hoy inexistente.</p>
+        <p>Una forma de protestar ante una inminente violación a la privacidad por parte de «los dueños de todo», como muchos los nombraban. A la fecha es incalculable el número de personas que se apegaron a estas protestas; algunas historias cuentan que el número fue mayor al de «La Gran Marcha de Chile», un suceso ocurrido en 2019 donde falsamente se hizo creer a la población que una gran cantidad de gente estaba apoyando los cambios impuestos a la fuerza por la ONU.</p>
+        <p>Las historias cuentan que el primer día fue pacífico; muchos ciudadanos coparon las calles para demostrar su infelicidad, la cual se sumaba a una cantidad tremenda de problemas que azotaban al ciudadano promedio: escaso acceso a víveres, nula comprensión de la soberanía por parte de quienes mandaban, una saturación de propaganda pro agenda y miles de pequeños problemas que generaban un descontento abrumador.</p>
+        <p>El pueblo de Chile ya había decidido y no iba a transar con quienes, bajo un falso buenismo, querían arrebatarles su privacidad y libertad.</p>
+        <p>El primer ataque masivo por parte de los chilenos que estaban a favor de mantener su patria intacta fue a los medios de comunicación. Grupos extremistas de liberación ingresaron al perímetro que resguardaba las antenas de retransmisión de señal e hicieron explotar grandes cargas de nitrometano para derribar dichas estructuras y así dejar sin efecto las transmisiones de canales abiertos, quienes repetían hasta el hartazgo: «Chile tiene que aceptar».</p>
+        <p>Este ataque, ocurrido en la provincia de Talagante, fue el puntapié inicial que dio por iniciada una época de desobediencia civil y atentados contra diferentes antenas televisivas.</p>
+        <p>Con el pasar de los días, los ciudadanos inyectados de una energía genuina coparon la avenida principal de Santiago y parte de la multitud se abultaba en el puente Pío Nono, donde se había transformado en un ritual improvisado —o como ellos decían, «un deporte»— el acto de lanzar dispositivos electrónicos al paupérrimo cauce del río Mapocho.</p>
+        <p>Televisores eran lanzados por ciudadanos llenos de risa, seguidos de celulares, relojes inteligentes, entre otros dispositivos arrojados en son de protesta.</p>
+        <p>La situación en este punto era incontrolable; nadie iba a su trabajo y todos concordaban en algo: querían su país de vuelta a toda costa y no iban a aceptar premios de consuelo ni regalías que taparan el sol con un dedo.</p>
+        <p>Los días se transformaron en semanas y al cabo de un mes Chile estaba en completa rebeldía. Ni los protocolos de seguridad ni las fuerzas de orden público pudieron contener la fuerza de un país trizado a punto de quebrarse.</p>
+        <p>El gran apagón, como cuentan los más ancianos, jamás podrá ser cuantificado, ya que aún se encuentran perdidos los registros audiovisuales de tal época.</p>
+        <p>Muchos se preguntan aún: ¿qué pasó con el dinero? ¿A dónde fue a parar la gran masa de dinero físico? Cuentan que gran parte de los billetes y monedas en circulación fueron depositados meses antes y transferidos a cuentas digitales que eran propiedad del gobierno.</p>
+        <p>La resistencia por parte de la población más patriota dejó en evidencia la nula comprensión del concepto de país por parte de la ONU y su gobierno unido.</p>
+        <p>Por su parte, la verdadera Resistencia al Globalitarismo, convulsionada por estas medidas que coartaban su libertad, comenzó a esconder algunos montos de dinero para resguardar la historia de más de trescientos años de billetes y monedas acuñadas en la antigua República de Chile.</p>
+        <p>Jamás podrían entender por qué los chilenos aman y respetan su tradición, sobre todo porque eran los primeros ejemplares de lo que se llamó en algún momento «posthumano».</p>
+      </div>
+    </article>
+
+    <div class="capitulo-sep">· · ·</div>
+
+    <!-- ── CAPÍTULO IV ── -->
+    <article class="capitulo" id="cap4">
+      <header class="capitulo-header">
+        <span class="capitulo-num">Capítulo IV</span>
+        <h2 class="capitulo-titulo">Cazar o ser cazado</h2>
+      </header>
+      <div class="prose">
+        <p class="first-para">Como era de costumbre, algunos jóvenes del subsuelo abandonaban la comodidad de la oscuridad y, por mera curiosidad, costumbre e incluso por aceptación social, iban a la caza de algunos pocos animales que podían encontrarse en la olvidada zona cordillerana.</p>
+        <p>La razón primordial: saciar el hambre de un pueblo que la mayor parte del tiempo come vegetales.</p>
+        <p>Los momentos en que se come carne son totalmente sagrados y pertenecen a una de las creencias de quienes, desesperanzados, han buscado lo sagrado en todo.</p>
+        <p>Cuando los jóvenes llegaban con carne de cordero significaba que un nuevo niño nacería en la tribu. Esto se viralizó en el momento en que un joven viajó solo a los extremos paisajes de un Santiago postapocalíptico. Allí cazó con sus propias manos y un par de piedras a un cordero, el cual fue llevado a la ciudadela subterránea. Uno de los oráculos dijo:</p>
+        <p class="italico">«Cuando sea un cordero blanco, ha de limpiarse la sangre de uno de nosotros para así traer a un nuevo miembro a la vida…»</p>
+        <p>Contando desde ese día nueve meses para el nacimiento de un niño o niña de sangre chilena. El oráculo no estaba equivocado: nueve meses luego de la llegada del joven Roto junto al cordero blanco degollado en sus hombros, nacieron consecutivamente tres niños, cada uno con días e incluso horas de diferencia.</p>
+        <p>La cuenta de días era un problema en este tiempo. Los calendarios habían desaparecido y todos se fiaban del recuerdo de quienes incesantemente escribían, como si no hubiese un mañana, la fecha que seguía del día anterior que habían vivido.</p>
+        <p>El buen augurio de un trozo de carne es venerado como el momento en que pueden ocasionalmente ser concebidos algunos pocos niños. Nadie sabe a estas alturas si el consumo de carne produce esto o si es solo una coincidencia temporal. Lo que es seguro es que quienes salen por esta arriesgada aventura esperan traer la buena nueva y la posibilidad, o la esperanza, de que nazca otro chileno entre un pueblo que yace estéril.</p>
+        <p>Los dos jóvenes, con diecisiete años recién cumplidos, ya abandonando la ciudad subterránea, emprendieron camino a las afueras de la devastada ciudad de Santiago. Estos representaban a la segunda generación nacida luego del gran apagón.</p>
+        <p>Los padres de aquellos valientes jóvenes rogaban por verlos volver sanos y salvos, teniendo la experiencia de ver cómo muchos no volvían jamás.</p>
+        <p>Luego de varias horas caminando entre escombros y viejas vitrinas que aún conservan maniquíes, los jóvenes comenzaron a sentir el peso de sobrevivir en la superficie. Temblorosos pasos escapaban de todo plan antes conversado, dejando al descubierto la comodidad de vivir sin peligros, lo pacífico que era estar bajo tierra y las pocas cosas que se saben sobre la superficie de una ciudad abandonada.</p>
+        <p class="dialogo">—Se nos va el sol —exclamó entre cansancio y balbuceos uno de los jóvenes, el menos experto—. Deberíamos descansar; queda mucho camino y se acerca la noche.</p>
+        <p>A lo que su compañero respondió:</p>
+        <p class="dialogo">—Si estás cansado, es muestra de que hemos avanzado; si nos pilla la noche quiere decir que no hemos caminado en vano. Deberíamos avanzar unos metros más, ya que necesitamos descansar en un lugar seguro. Mi padre me contó que es más difícil sobrevivir dentro de la ciudad que estando fuera… Por ello avancemos, mantengamos este paso y, si no puedes caminar más, ven, súbete a mi espalda…</p>
+        <p>La firmeza y la determinación del joven que conocía un poco más la travesía dieron fuerzas al joven inexperto, por lo que apuraron el paso, olvidando todo cansancio y estableciéndose en las cercanías de un pequeño pueblo a la salida norte de Santiago.</p>
+        <p>Los jóvenes, ya hambrientos y resguardados bajo un quillay, empezaron a cortar una tortilla de harina hecha entre las brasas, una receta antigua de tiempos en que el brasero era compañero de vida.</p>
+        <p>Uno de ellos abrió un frasco de un néctar dulce: una preparación tradicional de Chile traspasada durante décadas para así resguardar la receta y el rico sabor de una mermelada o dulce de alcayota.</p>
+        <p>Untó dos trozos de pan con dulce de alcayota y preparó una paila con huevos, una preparación típica de lo que los antiguos chilenos llamaban «once»: un momento al atardecer donde las familias disfrutaban de un té o café y pan untado con diferentes tipos de mermeladas o verduras. También frutas como el tomate y la palta.</p>
+        <p>El huevo era estrellado en un sartén suavemente aceitado con grasa de algunos animales que habían sido capturados y faenados.</p>
+        <p>El joven, ya experto en supervivencia por herencia familiar, cocinaba pacientemente mientras el otro joven movía las brasas y alimentaba el fuego. El huevo ya cocido y listo para servir era puesto en la misma sartén y se untaba en pedazos de pan que se iban cortando directamente de la tortilla.</p>
+        <p>Había algo que ningún explorador olvidaba llevar consigo: la bolsa de condimentos, que albergaba diferentes especias tales como sal de mar y merquén, una preparación de ají seco tostado combinado con diferentes hierbas. Dicen que estas preparaciones datan del tiempo precolonial, cuando aún Chile no era una república independiente.</p>
+        <p>Los jóvenes, ya habiendo recuperado fuerzas, comenzaron a montar sus sacos de dormir. Mientras se acomodaban, el joven con más experiencia le preguntó al joven inexperto:</p>
+        <p class="dialogo">—¿Qué estás mirando? —le preguntó curiosamente, mientras se quedaba en silencio observando el cielo estrellado.</p>
+        <p>El joven inexperto, que poco había hablado desde la salida de la ciudad subterránea, habló tímidamente:</p>
+        <p class="dialogo">—Mi padre decía que apenas el corazón dejaba de latir, algo abandonaba el cuerpo: un polvo que la brisa mueve hasta llegar al cielo.</p>
+        <p>El joven con mayor experiencia lo miró detenidamente y le dijo:</p>
+        <p class="dialogo">—Recuerdo el día en que mi madre murió. Ese día el cielo se nubló y los pájaros del exterior dejaron de cantar. Un silencio absoluto inundó los túneles del subsuelo. Corrí con los ojos empapados hasta la salida y una oscuridad cegó mi camino. Recuerdo ver al cielo, preguntándome: «¿Por qué a mí?», «¿Por qué la muerte le llega a quienes más amamos?»… Y luego de no poder llorar más, levanté la vista y vi pequeños destellos que subían al cielo… Lo recuerdo como si fuese ayer. Mientras esos destellos iban subiendo, las nubes comenzaban a abrirse y luego aparecieron mágicamente las estrellas. Recuerdo haber prometido que nunca dejaría de verlas y aquí estamos…</p>
+        <p class="dialogo">—Quizá todos algún día nos encontraremos allá —exclamó el joven inexperto.</p>
+        <p>Su compañero de viaje lo quedó mirando. Mientras movía las últimas brasas del fuego, le dijo:</p>
+        <p class="dialogo">—Eso espero, amigo. Ella me hace mucha falta…</p>
+        <p>Luego le regaló una cálida sonrisa que se difuminó con la oscuridad de la noche mientras se consumía el último trozo de leña en la fogata.</p>
+        <p>El sol comenzaba a salir por la cordillera y el sonido de aves silvestres hizo que los dos cazadores empezaran a abrir sus ojos.</p>
+      </div>
+    </article>
+
+    <div class="capitulo-sep">· · ·</div>
+
+    <!-- ── CAPÍTULO V ── -->
+    <article class="capitulo" id="cap5">
+      <header class="capitulo-header">
+        <span class="capitulo-num">Capítulo V</span>
+        <h2 class="capitulo-titulo">La suerte del Roto</h2>
+      </header>
+      <div class="prose">
+        <p class="dialogo">—¡Hey! ¡Hey! ¡Despierta! —susurró alarmado a su joven compañero—. ¡Vamos!</p>
+        <p>De golpe su compañero despertó y le tapó la boca, haciendo un gesto de silencio.</p>
+        <p class="dialogo">—Necesito que no hagas ruido. Levántate, ¡necesitamos irnos!</p>
+        <p class="dialogo">—¿Qué pasó? —susurró el joven cazador, aún aturdido por el sueño—. ¿Por qué tanta prisa?</p>
+        <p>El cazador le indicó con el dedo que mirara hacia afuera por una pequeña ventana de la casa.</p>
+        <p>El joven se refregó los ojos y trató de enfocar a la distancia. Se percató de unas luces rojas que se movían en par, acompañadas de ruidos de ramas siendo pisadas.</p>
+        <p class="dialogo">—¿Qu… qué es eso que se mueve allá? —preguntó el joven en voz baja.</p>
+        <p>Aún sin poder procesar lo que había visto, trató de buscar recuerdos o algo a qué asimilar lo que estaba viendo. Pero nada podía hacer conexión: era algo que nunca en su vida había visto, ya que la mayor parte la había pasado encerrado en los túneles de la ciudad.</p>
+        <p>Su compañero lo quedó mirando mientras tomaba su rostro y le decía, mirándolo fijamente:</p>
+        <p class="dialogo">—Por más que te asuste, no grites. Debemos tomar nuestras cosas y salir lo antes posible de este lugar.</p>
+        <p>Sus manos temblaban y le transmitían el sudor frío que emanaba.</p>
+        <p>El cazador primerizo volvió a ver por la ventana y ahora veía algo más que luces rojas: veía siluetas vestidas con trapos, de las cuales brillaban incandescentes sus ojos de color rojo. Sin entender nada, tomó sus cosas de forma silenciosa y siguió a su compañero, que comenzó a caminar para salir del lugar.</p>
+        <p>Mientras las siluetas caminaban sigilosamente por un bosque frondoso, los jóvenes empezaron a retirarse del sector, logrando dejar la casa atrás para esconderse entre unos arbustos.</p>
+        <p class="dialogo">—¿Qué fue eso? —dijo temblorosamente el cazador más novato—. ¿Nos buscaban a nosotros?</p>
+        <p>Su compañero, mientras divisaba la casa donde estaban, comentó sobre lo que acababa de ocurrir:</p>
+        <p class="dialogo">—Son merodeadores. Nadie sabe de dónde son. Solo se sabe que ellos no quisieron ser parte de nuestra ciudad y lograron sobrevivir en la superficie modificando su cuerpo, utilizando tecnología de drones y diferentes máquinas de seguridad…</p>
+        <p class="dialogo">—¿Por qué nunca me comentaste de eso? —replicó el joven cazador con una voz quebrada—. ¡Tú sabías de su existencia!</p>
+        <p>El cazador experimentado lo miró y le dijo entre dientes:</p>
+        <p class="dialogo">—Sabía que no vendrías, ni que te atreverías a salir si es que te comentábamos de esto… Debemos ser cautelosos. Muchos de nosotros han desaparecido a causa de estos merodeadores. Son salvajes y nunca se sabe dónde vas a encontrarlos…</p>
+        <p>Los dos jóvenes se quedaron mirando cómo dos de ellos entraban a la casa abandonada donde habían pasado la noche. El ruido de las ramas los alertó, pero no podían hacer mucho.</p>
+        <p>Uno de los salvajes tomó al cazador con más experiencia y le tapó la boca. El cazador recordó por qué estaban ahí: necesitaban regresar con comida. Pensó en su familia mientras el más joven miraba despavorido. Tomó el puñal de hueso que había estado afilando la noche anterior y, con la fuerza de toda su historia, clavó certeramente el puñal en el salvaje, logrando atravesar sus ropas y su carne. El salvaje dio un paso atrás sin decir ni una palabra. El cazador giró el puñal, lo retiró de su carne y volvió a ensartarlo una y otra vez.</p>
+        <p>Mientras esto pasaba, el joven cazador buscaba en su bolso un trozo de cuerda. Al ver que su compañero había sacado al salvaje, se abalanzó y con temor logró ahorcarlo rápidamente, escuchando cómo le faltaba el aire y trataba de retirar la cuerda de su cuello.</p>
+        <p>El cazador apuñalaba su pecho como si no existiese un mañana. Había nacido en él una fuerza interior al ver a su joven compañero sollozar mientras ahorcaba al salvaje.</p>
+        <p>Golpe tras golpe fue clavando el puñal de hueso, teniendo en mente que debían regresar con vida y con una misión que cumplir.</p>
+        <p>El joven logró abatir al salvaje mientras lloraba de miedo y rabia. Cruzaron miradas mientras el salvaje se retorcía con las últimas fuerzas que le quedaban. Sabían que era el golpe final, el último esfuerzo.</p>
+        <p>El cazador tomó por última vez el puñal, se posicionó sobre su cuerpo y elevó las manos para golpearlo con sus últimas fuerzas. Rápidamente clavó el puñal de hueso y tapó su boca mientras lo adentraba cada vez más. El salvaje perdió totalmente su fuerza a causa del incesante ahorcamiento que recibió.</p>
+        <p>Todo esto pasó en tres minutos. Los jóvenes no dudaron un segundo en lo que estaban haciendo, pero debían actuar con cuidado: sabían que había dos salvajes en la casa y que debían acabar rápido con la vida de quien los acechó.</p>
+        <p>Mientras el más experimentado rezaba en voz baja cerrando los párpados del extraño ser que acababan de aniquilar, el cazador primerizo estaba paralizado, observando los implantes mecánicos y electrónicos que poseía ese ser.</p>
+        <p>Se puso a pensar en la naturaleza de estos merodeadores, si es que alguno de ellos en algún momento perteneció a la comunidad subterránea o si eran de los que se rehusaron a vivir junto a ellos.</p>
+        <p>Pero ninguna de estas interrogantes le quitaba la idea de que había acabado con otra vida. Que, a pesar de los implantes y los ojos iluminados de rojo, había ocupado su fuerza para matar a otro.</p>
+        <p class="dialogo">—¿Estás bien? —preguntó su compañero mientras ponía su mano en su hombro—. Creo que debemos marchar; no estamos en un lugar seguro…</p>
+        <p>El joven primerizo mantenía su cuerpo inmóvil mientras escuchaba las palabras de su compañero, intentando digerir lo que habían vivido. Su mirada estaba perdida en quien los había atacado. Lentamente acercó su mano hacia el cuerpo del atacante y con curiosidad tocó los cables que salían del interior de su brazo. No lograba entender cómo una figura humana podía tener implantes mecánicos. No se trataba de un androide ni de un robot, sino de una persona de carne y hueso que, al parecer, estaba reconstruida.</p>
+        <p>¿De dónde salieron esos hombres? ¿A qué sobrevivieron? ¿Por qué viven en la superficie? Eran preguntas que se le venían a la mente mientras su compañero seguía hablándole, pero él no escuchaba; no estaba ahí.</p>
+        <p>Un sonido ensordecedor lo sacó del trance: era el cuerpo del atacante, que emitía un sonido agudo e intermitente, como si se tratase de un localizador.</p>
+        <p class="dialogo">—¡Vamos! ¡Debemos salir de aquí! —dijo enérgicamente el cazador que ya había estado en la superficie—. ¡Necesitamos salir ahora!</p>
+        <p>Tomó el brazo de su compañero, aún en shock, y jaló de él para levantarlo. Volvió en sí y lograron escabullirse por un bosque, sabiendo que los otros merodeadores irían por el cuerpo.</p>
+        <p>Caminaron por el bosque unas horas y, al ver que estaban alejados de la zona del suceso, descansaron un momento apoyándose en los árboles que los rodeaban.</p>
+        <p>Nuevamente se escucharon ramas crujir. Se miraron atentamente y divisaron una figura a lo lejos.</p>
+        <p>El cazador más experimentado, con el arma ensangrentada en su mano, se levantó y empezó a escuchar cómo los pasos se iban acercando.</p>
+        <p>Finalmente, ahí frente a ellos se encontraba lo que estaban buscando: un cordero.</p>
+        <p>El cazador tocó el hombro de su compañero y le indicó la posición del animal. El joven primerizo tomó un respiro; sabía que pronto estarían nuevamente en casa.</p>
+      </div>
+    </article>
+
+    <div class="capitulo-sep">· · ·</div>
+
+    <!-- ── CAPÍTULO VI ── -->
+    <article class="capitulo" id="cap6">
+      <header class="capitulo-header">
+        <span class="capitulo-num">Capítulo VI</span>
+        <h2 class="capitulo-titulo">El peso de la superficie</h2>
+      </header>
+      <div class="prose">
+        <p class="dialogo">—Ya no respira…</p>
+        <p class="dialogo">—¿Cuánto tiempo crees que lleva aquí?</p>
+        <p class="dialogo">—No lo sé, pero su temperatura indica que no fue hace mucho…</p>
+        <p class="dialogo">—Puedo ver que fue apuñalado siete veces; el puñal parece ser algo rústico.</p>
+        <p class="dialogo">—¿Qué hacemos? No teníamos en cuenta que derribarían a uno de los nuestros.</p>
+        <p class="dialogo">—Llevemos su núcleo a casa y demos sepulcro a su cadáver.</p>
+        <p class="dialogo">—Qué lamentable. Pensé que volveríamos los tres a salvo. Al parecer ellos no son tan pasivos como creíamos. Debemos tener cuidado…</p>
+        <p>Luego de esta fría y contemplativa conversación, los dos merodeadores procedieron a sacar el núcleo de su compañero muerto. Tomaron sus cuchillos, rasgaron sus ropas y comenzaron a palpar su pecho.</p>
+        <p>Uno de ellos sacó un artilugio de su bolso al cual conectó una piedra parecida a un prisma. Su forma era irregular; daba a entender que había sido tallada por ellos mismos. Tomó el prisma y lo puso en el artilugio; este comenzó a girar en su propio eje y, de forma automática, lanzó un haz de luz azulado.</p>
+        <p>Con mucho cuidado comenzó a cortar la piel de su difunto compañero. Mientras abría su pecho, el otro merodeador movía ramas y hojas para comenzar a cavar.</p>
+        <p class="dialogo">—No entiendo cómo lo atacaron —susurraba mientras trataba cuidadosamente de sacar el núcleo de su compañero.</p>
+        <p class="dialogo">—La vida es un misterio; nada puede darse por conocido. Pero lo único seguro es que sus habitantes no son los mismos que conocimos hace un tiempo.</p>
+        <p class="dialogo">—Quizá, si supieran que también pertenecimos a ellos, todo hubiese sido diferente.</p>
+        <p class="dialogo">—¿De qué hablas? Ya no somos parte de eso —dijo con indiferencia mientras seguía cavando.</p>
+        <p>Luego de estas palabras vino un profundo silencio. El merodeador desconectó el núcleo de su compañero y lo puso en su bolso.</p>
+        <p>Los dos tomaron el cuerpo de su compañero, que yacía muerto en el bosque, y lo llevaron hasta el agujero. Cantaron de forma silenciosa en un idioma ininteligible y taparon el cuerpo.</p>
+        <p>Los dos sabían que volver a casa iba a ser complicado; llevar la mala noticia sería algo que ninguno de los dos esperaba.</p>
+      </div>
+    </article>
+
+    <div class="capitulo-sep">· · ·</div>
+
+    <!-- ── CAPÍTULO VII ── -->
+    <article class="capitulo" id="cap7">
+      <header class="capitulo-header">
+        <span class="capitulo-num">Capítulo VII</span>
+        <h2 class="capitulo-titulo">Sobre los hombros</h2>
+      </header>
+      <div class="prose">
+        <p class="first-para">Después de varias horas caminando con el cordero en los hombros, los cazadores tomaron un descanso. Sabían que el camino de regreso era duro y que el silencio los acompañaba.</p>
+        <p>Se encontraban cada vez más cerca del refugio subterráneo; el peso del animal iba desgastando las fuerzas de los jóvenes cazadores, que aún seguían impactados por el encuentro que habían tenido antes de cazar al animal.</p>
+        <p>Muchas preguntas surgían en la mente del cazador inexperto, que había pisado la superficie por primera vez. Sabía que tenían respuestas, pero no iba a molestar a su compañero, quien mantenía un silencio rotundo y un enfoque total en la vuelta a casa.</p>
+        <p>Pasaron largos minutos sentados bajo un antiguo paradero que se encontraba a unos kilómetros de la entrada a la ciudad subterránea. Como si compartieran los pensamientos, se pararon y comenzaron a caminar. Un comentario cortó el silencio:</p>
+        <p class="dialogo">—Toma, te toca llevarlo a ti. Quedan unos pocos kilómetros y estoy cansado —dijo bajo un tono serio a su compañero—. Además, es tu primera salida y este animal te pertenece. Volver con él sobre los hombros es la tradición. Y aparte… te lo mereces. Acabamos de sobrevivir…</p>
+        <p>Su compañero lo miró firmemente mientras recibía el animal. Lo puso en su cuello y tomó sus patas, sintiendo el calor que aún emanaba el cuerpo del cordero que cazaron horas atrás. Levantó su cuerpo y comenzó a caminar lentamente, esperando llegar a salvo a la entrada de la ciudad.</p>
+      </div>
+    </article>
+
+    <div class="capitulo-sep">· · ·</div>
+
+    <!-- ── CAPÍTULO VIII ── -->
+    <article class="capitulo" id="cap8">
+      <header class="capitulo-header">
+        <span class="capitulo-num">Capítulo VIII</span>
+        <h2 class="capitulo-titulo">El secreto de los sabios</h2>
+      </header>
+      <div class="prose">
+        <p class="first-para">Mientras las madres y las abuelas del refugio enseñaban a sus hijos a cultivar en pequeños espacios dentro del túnel, los ancianos contaban historias de lo que vivieron hace algunos años en la superficie y transferían de generación en generación las tradiciones y costumbres de un Chile casi extinto. Los niños escuchaban atentamente, mirando con ojos de asombro cómo se sentía vivir en la superficie de la ciudad.</p>
+        <p>Muchos jóvenes ya sabían algunas historias de memoria, al haberlas escuchado una y otra vez de los sabios de los túneles. Sabían que, aunque en algún momento les tocaría ir allá arriba, nunca sería lo que los mayores alguna vez les contaron. Aun así, muchos soñaban con salir por primera vez y ver qué era de las ruinas que se encontraban afuera.</p>
+        <p class="dialogo">—¡Llegaron! —gritó uno de los guardias del acceso al túnel—. ¡Llegaron y vienen con un animal!</p>
+        <p>Entre murmullos y rezos de alegría se alzó una voz anciana que gritó rotundamente:</p>
+        <p class="dialogo">—¡Abran las puertas! ¡Nuestros hijos han llegado!</p>
+        <p>Los guardias miraban por las pantallas oxidadas que aún daban imagen y activaron el reconocimiento facial. Uno de ellos activó el protocolo de seguridad: luego de presionar botones en una pared y conectar algunos cables, accionó un interruptor que activó las grandes puertas exteriores para que los jóvenes entraran al refugio.</p>
+        <p>Un sonido estruendoso de metales oxidados y mecanismos maltrechos acompañó la llegada de los dos cazadores que habían concluido su viaje y que, cumpliendo con su misión, trajeron consigo un animal con el cual los ocupantes de los túneles podrían alimentarse de dicho manjar.</p>
+        <p>Al cerrarse las compuertas metálicas, los jóvenes se sintieron a salvo. Nunca pensaron que la superficie fuera un lugar tan hostil, menos al no concordar con las historias que siempre escucharon y que los ancianos contaban con tanto fervor.</p>
+        <p>Las puertas internas se abrieron lentamente mientras la multitud comenzaba a acercarse para darles la bienvenida. Los niños miraban a los jóvenes como héroes y celebraban su llegada. Los ancianos, por su parte, se sentían felices al saber que estaban a salvo y que la superficie aún era tierra fértil para ser el hábitat de animales salvajes que podían cazar.</p>
+        <p>Es sabido por ellos que, por las condiciones de los túneles, no era posible criar animales; muchas veces lo intentaron sin obtener resultados.</p>
+        <p>Entre aplausos y cantos celebraron la llegada. Los jóvenes saludaron a sus cercanos y abrazaron a sus madres y abuelas, quienes, envueltas en alegría y lágrimas, tomaron sus rostros y besaron sus mejillas.</p>
+        <p>El joven primerizo cumplió su misión y entregó el cordero a los sabios, quienes esbozaron felicidad y una profunda tranquilidad.</p>
+        <p class="dialogo">—Lo lograste, chiquillo —le dijo uno de los ancianos mientras tomaba las manos del joven que por primera vez salía de caza fuera del túnel.</p>
+        <p>El joven, emocionado, abrazó al anciano. Pero no era solo felicidad lo que demostraba; estaba profundamente confundido con lo que había vivido, y la probabilidad de que volviera a salir por su cuenta era muy baja. Mientras abrazaba al anciano, le dijo en voz baja:</p>
+        <p class="dialogo">—¿Por qué nunca nos contaron sobre ellos? Los hemos visto muy de cerca y ustedes nunca nos habían dicho nada… —le dijo conmocionado el joven primerizo.</p>
+        <p>El anciano lo miró atentamente y le dijo algo al oído a su viejo amigo. El anciano volvió a mirar al joven cazador y le dijo:</p>
+        <p class="dialogo">—No es momento para preocuparse. Toma un poco de este vino y celebra con tus amigos; luego hablaremos de aquello.</p>
+        <p>El joven logró entender la importancia de sus palabras y creyó saber por qué su compañero tampoco quiso decir nada. Al parecer era un secreto de pocos, que no podía ser revelado a los demás; por lo que había vivido, entendía lo que esto podría traer a la población que residía en los túneles.</p>
+        <p>La celebración siguió entre cantos y risas. Las madres prepararon el festín y los hombres procedieron a trozar el animal para conservarlo y tener provisiones.</p>
+        <p>El joven cazador había vivido su primera experiencia junto a su compañero, el cual conocía los peligros de ir a conseguir un poco de carne para su olvidado pueblo.</p>
+        <p>Luego de celebrar y compartir con sus seres queridos, los jóvenes se apartaron de la comunidad y llegaron al rincón de los ancianos, donde estos discutían mientras llenaban sus vasos de un espeso vino tan oscuro como la noche.</p>
+        <p class="dialogo">—Disculpe mis años, mijo; ya no recuerdo su nombre. ¿Podría decírmelo? —le preguntó el anciano al cazador que había subido por primera vez a la superficie.</p>
+        <p class="dialogo">—Mi nombre… Sí. Soy Víctor.</p>
+        <p class="dialogo">—¿Y tu compañero de viaje? ¿Cuál es su nombre? —dijo el anciano mientras les entregaba un vaso de vino a cada uno.</p>
+        <p class="dialogo">—Germaín. Ese es mi nombre.</p>
+        <p class="dialogo">—¿Cómo? —le preguntó el anciano levantando la voz y acercando su oído.</p>
+        <p class="dialogo">—Me llamo Germaín —repitió alzando la voz el joven que había salido por segunda vez a la superficie.</p>
+        <p class="dialogo">—Germaín… Me recuerdas a un artista chileno. No creo que lo conozcas, menos su música. Pero bueno, eso fue hace más de un siglo… Entonces, tuvieron un encuentro. Tu compañero me comentó que los vieron…</p>
+        <p class="dialogo">—¡Sí! Fue más que solo un encuentro —confirmó Víctor de forma acelerada—. Ellos nos estaban buscando al momento de tomar un descanso en una de las casas abandonadas que están saliendo de la ciudad. Vi sus ojos; fue algo que jamás olvidaré…</p>
+        <p class="dialogo">—Ya veo… Hace mucho tiempo que no teníamos noticias sobre ellos —dijo pensativo el anciano mientras miraba su vino y tomaba un sorbo.</p>
+        <p class="dialogo">—Uno de ellos tomó por la espalda a Germaín, y puse una cuerda en su cuello para que lo soltara. Temí por la vida de ambos. En eso…</p>
+        <p>Germaín replicó abruptamente:</p>
+        <p class="dialogo">—Mientras Víctor apretaba la cuerda en su cuello… no me quedó otra que sacar un puñal de hueso que guardaba en mi bolso y… lo apuñalé hasta quitarle la vida —explicó nerviosamente el joven cazador.</p>
+        <p class="dialogo">—Ya veo, jóvenes. Lamento mucho el evento traumático que han vivido —dijo cálidamente el anciano—. Lo bueno es que pudieron sobrevivir y salir con vida.</p>
+        <p class="dialogo">—Sí. Necesito saber quiénes son… —respondió Víctor mientras miraba atentamente sus ojos—. ¡¿Por qué nadie nos había comentado sobre ellos?!</p>
+        <p>El anciano miraba su vaso y bebía con calma mientras Víctor seguía con la mirada fija.</p>
+        <p class="dialogo">—¿Ustedes saldrían si desde pequeños les contamos sobre ellos? Son los únicos que han visto a los merodeadores en años. Nosotros ya hemos vivido mucho; no estamos en condiciones de salir a cazar y traer alimento. Por eso confiamos en su fuerza y voluntad, en la valentía que poseen para subir y seguir alimentando a este olvidado pueblo…</p>
+        <p>Hizo una pausa antes de continuar:</p>
+        <p class="dialogo">—Ahora que ustedes tuvieron un encuentro, claro… tendrán que llevar consigo este secreto. Ni las madres ni los niños pueden saber de la existencia de estos seres. Difundir esto entre los que vivimos en los túneles no creo que sea una buena idea. Míralos… Ellos disfrutan de estos pequeños momentos. Viviendo aquí es poco y nada lo que podemos hacer, y las alegrías son momentos escasos: ver a los niños jugando, a las mujeres preparar el festín y a los jóvenes aprender de lo poco que tenemos para enseñar, es parte de esta vida en calma. El miedo que traería el difundir que afuera hay otros podría incluso destruirnos… ¿Lo entiendes, mijo?</p>
+        <p>Víctor, confundido, bajó la mirada y le preguntó a su compañero:</p>
+        <p class="dialogo">—Para ti no fue ninguna sorpresa… ¿Ya lo sabías?</p>
+        <p>Germaín lo miró atentamente, con un rostro cansado pero en armonía.</p>
+        <p class="dialogo">—Sí. Esta conversación la tuve cuando volví por primera vez… Eso fue hace un tiempo. Cuando salimos a cazar junto a mi padre, hicimos la misma ruta y logramos cazar dos corderos. La noche nos ayudó a camuflarnos y vimos a cuatro de ellos. Mi padre me dijo que debíamos volver lo antes posible; sabía que podían rastrear nuestros pasos, nuestra respiración. Al volver, me trajo a conversar con los ancianos y ellos me contaron sobre estos seres de la superficie…</p>
+        <p class="dialogo">—Así es, querido Víctor —replicó el anciano mientras llenaba los vasos con el vino espeso—. Hace un tiempo, un grupo de cazadores decidió ir a «El Valle», una ciudad eterna en la cual viven ancianos como nosotros que detuvieron su envejecimiento. Muchos de ellos pertenecen a familias que contaban con los recursos necesarios para costear esa vida.</p>
+        <p class="dialogo">Ese grupo buscaba infiltrarse para encontrar tecnología necesaria para poder prosperar en los túneles. Desaparecieron por días; cuentan que su travesía fue larga y debieron corromper la seguridad del sistema para ingresar por túneles destinados a los servidores informáticos de la ciudad.</p>
+        <p class="dialogo">Llevaron algunos artilugios que conservaban desde el gran apagón y que fueron heredados. Con ello lograron rescatar una serie de documentos digitales, información que podían ver solo en sus pantallas. Esa información les ayudó a entender la ciudad eterna, por lo que estuvieron varios días escondidos tratando de encontrar la forma de acceder a la superficie de «El Valle».</p>
+        <p class="dialogo">No lo lograron, pero lo que lograron fue mucho más próspero para todos. Robaron tecnología albergada en cuartos de desechos informáticos de aquellos túneles; en conjunto con los archivos que encontraron, pudieron entender cómo generar fuentes de energía solar y otro tipo de ayudas medicinales que involucran objetos tecnológicos como prótesis en el cuerpo…</p>
+        <p>Los jóvenes escuchaban atentamente mientras el anciano contaba lo sucedido hacía más de treinta años. Dos mujeres se acercaron a los jóvenes para ofrecerles un plato de comida. En ese momento todos guardaron silencio y actuaron como si estuviesen hablando de otros temas.</p>
+        <p>El anciano tomó un sorbo de vino, comió unas papas cocidas y, después de tragar, siguió contando lo sucedido.</p>
+        <p class="dialogo">—Estuvieron aproximadamente dos semanas fuera de los túneles. Cuando lograron volver, los recibimos con mucha alegría; algunos de ellos eran parientes y amigos de nosotros, los más viejos… Volvieron con bolsos llenos de tecnología que no entendíamos; celebramos su llegada junto a cantos y comida.</p>
+        <p class="dialogo">Luego de la celebración se nos acercaron para comentarnos sus descubrimientos. Muchos de ellos, emocionados, lograron explicar un mínimo porcentaje de lo descubierto. A pesar de que nos describieron lo vivido, sabíamos que algo faltaba; en sus rostros algo estaban ocultando, y quizá era una verdad que nos podría liberar como pueblo…</p>
+        <p class="dialogo">No insistimos en saber qué era, pues se veían muy cansados, como si hubiesen vivido una guerra o un combate que los había dejado marcados.</p>
+        <p class="dialogo">Lucas, mi amigo cercano, que había estado en el grupo, me comentó lo que vivieron: entre lágrimas y preocupación por el destino de los que vivíamos separados de todo en los túneles. Él sabía que no íbamos a prosperar, y no por lo que nos esperaba afuera, sino por el conflicto interno que iba a ocurrir por parte de quienes manejaban esta información.</p>
+        <p class="dialogo">Temía una rebelión, y no se equivocaba. Con el tiempo nos dimos cuenta de que los que manejaban la información de la ciudad eterna tenían planes personales para implementar la tecnología que habían robado; pero no en los túneles, sino en nosotros mismos, insertando partes y circuitos en nuestros cuerpos…</p>
+        <p class="dialogo">La idea no fue muy bien recibida por los ancianos de esa época ni por gran parte de los que vivíamos aquí. Los ancianos entraron en conflicto con el grupo más radical y decidieron desterrarlos; con ellos se llevaron gran parte de la tecnología y de los documentos recuperados.</p>
+        <p class="dialogo">Nunca más supimos de ellos, al menos de ese grupo. Pero sabemos que están en algún lugar, que esperan quizá volver a los túneles y recuperar gente o el espacio… Esto lo sabemos porque muchos de los nuestros no han vuelto cuando van de excursión a la superficie. Y también hay quienes, como ustedes, los han visto y han vuelto para contarnos cómo fueron esos encuentros.</p>
+        <p class="dialogo">Solo sabemos que son de los nuestros y que decidieron un camino diferente… A pesar de ser humanos, se volvieron salvajes, y jamás volvimos a tener paz entre nosotros.</p>
+      </div>
+    </article>
+
+    <div class="capitulo-sep">· · ·</div>
+
+    <!-- ── CAPÍTULO IX (placeholder) ── -->
+    <article class="capitulo" id="cap9">
+      <header class="capitulo-header">
+        <span class="capitulo-num">Capítulo IX</span>
+        <h2 class="capitulo-titulo">[ Por desarrollar ]</h2>
+      </header>
+      <div class="prose">
+        <p style="color: var(--text-dim); font-style: italic;">Este capítulo está pendiente de desarrollo. El texto se incorporará en una próxima revisión del manuscrito.</p>
+      </div>
+    </article>
+
+  </div>
+</main>
+
+<!-- ─── FOOTER ─── -->
+<footer id="footer">
+  <div class="footer-rule"></div>
+  <p class="footer-title">Neo Santiago 2130 — Diego Bastías Alfaro</p>
+  <p class="footer-status">Obra en desarrollo · 2023</p>
+</footer>
+
+<!-- ─── FAB BUTTONS ─── -->
+<div id="fab">
+  <button class="fab-btn" onclick="scrollToSection('indice')">↑ Índice</button>
+  <button class="fab-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">Inicio</button>
+</div>
+
+<script>
+// ─── THEME ───────────────────────────────────────────────
+const btn = document.getElementById('themeBtn');
+let dark = true;
+
+function toggleTheme() {
+  dark = !dark;
+  document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
+  btn.textContent = dark ? 'Modo claro' : 'Modo oscuro';
+}
+
+// ─── SCROLL HELPERS ──────────────────────────────────────
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ─── PROGRESS BAR ────────────────────────────────────────
+const bar = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  const pct   = total > 0 ? (window.scrollY / total) * 100 : 0;
+  bar.style.width = pct + '%';
+});
+
+// ─── FAB VISIBILITY ──────────────────────────────────────
+const fab = document.getElementById('fab');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 600) {
+    fab.classList.add('visible');
+  } else {
+    fab.classList.remove('visible');
+  }
+}, { passive: true });
+</script>
+</body>
+</html>
