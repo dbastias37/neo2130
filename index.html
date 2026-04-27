@@ -681,79 +681,150 @@ section {
 }
 
 /* ─────────────────────────────────────────────
-   NOVEL COVER — clean responsive hero image
-   La portada usa contain para no cortar el título inferior.
+   NOVEL COVER — full-screen hero image
 ───────────────────────────────────────────── */
 #novel-cover {
   position: relative;
   width: 100%;
-  min-height: 100svh;
-  padding-top: var(--nav-h);
+  height: 100vh;
+  min-height: 500px;
   overflow: hidden;
-  background: #050505;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 }
 
 #novel-cover-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: calc(100svh - var(--nav-h));
-  max-height: calc(100svh - var(--nav-h));
-  object-fit: contain;
-  object-position: center center;
-  display: block;
-  background: #050505;
-  will-change: auto;
-  transform: none !important;
+  height: 120%;          /* extra height for parallax travel */
+  object-fit: cover;
+  object-position: center top;
+  will-change: transform;
+  transform: translateY(0);
 }
 
-/* Sombra sutil para conservar la estética, sin tapar el título de la imagen */
+/* dark gradient so text pops at the bottom */
 #novel-cover::after {
   content: '';
   position: absolute;
-  inset: var(--nav-h) 0 0 0;
+  inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,0.08) 0%,
-    rgba(0,0,0,0.00) 38%,
-    rgba(0,0,0,0.12) 72%,
-    rgba(0,0,0,0.28) 100%
+    rgba(0,0,0,0.05)  0%,
+    rgba(0,0,0,0.0)  30%,
+    rgba(0,0,0,0.55) 70%,
+    rgba(0,0,0,0.88) 100%
   );
   pointer-events: none;
   z-index: 1;
 }
 
-#novel-cover-hint,
 #novel-cover-scroll-hint {
   position: absolute;
-  bottom: 12px;
+  bottom: 28px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  animation: hintPulse 2.4s ease-in-out infinite;
   pointer-events: none;
-  animation: hintBob 2.2s ease-in-out infinite;
-  opacity: 0.72;
 }
 
-#novel-cover-hint span,
 #novel-cover-scroll-hint span {
   font-family: var(--font-ui);
-  font-size: 0.48rem;
+  font-size: 0.52rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.36);
+  color: rgba(255,255,255,0.45);
 }
 
-#novel-cover-hint svg,
 #novel-cover-scroll-hint svg {
   width: 18px;
   height: 18px;
-  stroke: rgba(255,255,255,0.30);
+  stroke: rgba(255,255,255,0.35);
+  fill: none;
+  stroke-width: 1.5;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) translateY(0); }
+  50%       { opacity: 1;   transform: translateX(-50%) translateY(5px); }
+}
+
+/* Fade-out as user scrolls */
+#novel-cover.fading {
+  /* opacity controlled via JS inline style */
+}
+
+
+/* ═══════════════════════════════════════════
+   NOVEL COVER HERO
+═══════════════════════════════════════════ */
+#novel-cover {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 520px;
+  overflow: hidden;
+}
+
+#novel-cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 115%;
+  object-fit: cover;
+  object-position: center 15%;
+  will-change: transform;
+  transform: translateY(0);
+  display: block;
+}
+
+#novel-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.04)  0%,
+    rgba(0,0,0,0.0)   25%,
+    rgba(0,0,0,0.5)   68%,
+    rgba(0,0,0,0.92)  100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+#novel-cover-hint {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  animation: hintBob 2.2s ease-in-out infinite;
+}
+
+#novel-cover-hint span {
+  font-family: 'Courier New', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+}
+
+#novel-cover-hint svg {
+  width: 20px; height: 20px;
+  stroke: rgba(255,255,255,0.35);
   fill: none;
   stroke-width: 1.5;
   stroke-linecap: round;
@@ -761,58 +832,304 @@ section {
 }
 
 @keyframes hintBob {
-  0%,100% { transform: translateX(-50%) translateY(0);  opacity: 0.55; }
-  50%     { transform: translateX(-50%) translateY(5px); opacity: 0.85; }
+  0%,100% { transform: translateX(-50%) translateY(0);   opacity:.7; }
+  50%     { transform: translateX(-50%) translateY(6px);  opacity:1;  }
 }
 
-/* Botones un poco más firmes, sin cambiar la estética general */
-.btn-primary,
-.btn-nav,
-.fab-btn {
-  font-weight: 600;
+
+/* ═══════════════════════════════════════════
+   AUDIOLIBRO SECTION
+═══════════════════════════════════════════ */
+#audiolibro {
+  padding: 80px 24px;
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
-@media (max-width: 600px) {
-  #novel-cover {
-    min-height: 100svh;
-    padding-top: var(--nav-h);
-  }
-
-  #novel-cover-img {
-    width: 100%;
-    height: auto;
-    max-height: calc(100svh - var(--nav-h));
-    object-fit: contain;
-    object-position: center center;
-  }
-
-  #novel-cover-hint,
-  #novel-cover-scroll-hint {
-    bottom: 8px;
-    opacity: 0.55;
-  }
-
-  .btn-primary,
-  .btn-nav,
-  .fab-btn {
-    font-weight: 600;
-    letter-spacing: 0.16em;
-  }
+.audio-inner {
+  max-width: var(--max-prose);
+  margin: 0 auto;
 }
 
-@media (min-width: 900px) {
-  #novel-cover-img {
-    max-width: 100%;
-    max-height: calc(100svh - var(--nav-h));
-    height: auto;
-    object-fit: contain;
-  }
+.audio-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 32px;
+}
 
-  .btn-primary,
-  .btn-nav,
-  .fab-btn {
-    font-weight: 600;
-  }
+@media (max-width: 680px) {
+  .audio-layout { grid-template-columns: 1fr; gap: 28px; }
+}
+
+/* Track list */
+.audio-tracklist {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.audio-track {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+
+.audio-track:hover {
+  background: var(--accent-glow);
+  border-color: var(--border-hi);
+}
+
+.audio-track.active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+}
+
+.audio-track-num {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  min-width: 36px;
+  flex-shrink: 0;
+}
+
+.audio-track.active .audio-track-num {
+  color: var(--accent);
+}
+
+.audio-track-name {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--text);
+  font-style: italic;
+  flex: 1;
+  line-height: 1.3;
+}
+
+.audio-track.active .audio-track-name {
+  color: var(--text-hi);
+}
+
+.audio-track-dur {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+
+/* Playing indicator */
+.audio-playing-bars {
+  display: none;
+  gap: 2px;
+  align-items: flex-end;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.audio-track.active.playing .audio-playing-bars {
+  display: flex;
+}
+
+.audio-track.active.playing .audio-track-num {
+  display: none;
+}
+
+.audio-playing-bars span {
+  display: block;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 1px;
+  animation: bar-bounce 0.8s ease-in-out infinite;
+}
+.audio-playing-bars span:nth-child(1) { height: 6px;  animation-delay: 0s; }
+.audio-playing-bars span:nth-child(2) { height: 12px; animation-delay: 0.15s; }
+.audio-playing-bars span:nth-child(3) { height: 8px;  animation-delay: 0.3s; }
+
+@keyframes bar-bounce {
+  0%,100% { transform: scaleY(0.4); }
+  50%      { transform: scaleY(1); }
+}
+
+/* Player widget */
+.audio-player {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: calc(var(--nav-h) + 20px);
+  padding: 24px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+}
+
+.audio-player-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--text-hi);
+  line-height: 1.35;
+  min-height: 2.7em;
+}
+
+.audio-player-chapter {
+  font-family: var(--font-ui);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* Progress bar */
+.audio-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.audio-progress-bar {
+  position: relative;
+  height: 3px;
+  background: var(--border-hi);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: height 0.15s ease;
+}
+
+.audio-progress-bar:hover { height: 5px; }
+
+.audio-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  width: 0%;
+  pointer-events: none;
+  transition: width 0.1s linear;
+}
+
+.audio-progress-times {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-ui);
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+/* Controls row */
+.audio-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.audio-btn {
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border: 1px solid var(--border-hi);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: var(--r);
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.audio-btn:hover {
+  border-color: var(--accent);
+  color: var(--text-hi);
+  background: var(--accent-glow);
+}
+
+.audio-btn.play-btn {
+  padding: 10px 24px;
+  border-color: var(--accent);
+  color: var(--text-hi);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+}
+
+.audio-btn.play-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.audio-btn.speed-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* No audio notice */
+.audio-no-file {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 12px 0 4px;
+  opacity: 0.6;
+}
+
+
+/* Audiolibro secondary button on cover */
+.btn-secondary {
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 14px 36px;
+  border: 1px solid #0e0e0e;
+  background: var(--accent);
+  color: #0e0e0e;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-block;
+  text-decoration: none;
+  margin-top: 12px;
+}
+
+.btn-secondary:hover {
+  background: var(--accent-soft);
+  border-color: #0e0e0e;
+  color: #e8e4dc;
+}
+
+/* FAB audiolibro accent */
+.fab-btn.fab-audio {
+  border-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+.fab-btn.fab-audio:hover {
+  border-color: var(--accent);
+  color: #fff;
+  background: var(--accent);
+}
+
+/* Cover buttons wrapper */
+.cover-btns {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
 }
 
 </style>
@@ -857,7 +1174,10 @@ section {
     <blockquote class="cover-tagline">
       «Santiago ya no pertenece a los humanos.»
     </blockquote>
-    <a class="btn-primary" onclick="scrollToSection('lectura')">Comenzar lectura</a>
+    <div class="cover-btns">
+      <a class="btn-primary" onclick="scrollToSection('lectura')">Comenzar lectura</a>
+      <a class="btn-secondary" onclick="scrollToSection('audiolibro')">Audiolibro</a>
+    </div>
   </div>
 </section>
 
@@ -939,6 +1259,11 @@ section {
         <span class="indice-num">Cap. IX</span>
         <span class="indice-dots"></span>
         <span class="indice-title">[ Por desarrollar ]</span>
+      </a>
+      <a class="indice-item" onclick="scrollToSection('audiolibro')">
+        <span class="indice-num">◉</span>
+        <span class="indice-dots"></span>
+        <span class="indice-title">Audiolibro</span>
       </a>
     </nav>
   </div>
@@ -1318,6 +1643,105 @@ section {
   </div>
 </main>
 
+
+<!-- ─── AUDIOLIBRO ─── -->
+<section id="audiolibro" scroll-margin-top="var(--nav-h)">
+  <div class="audio-inner">
+    <span class="section-label">Audiolibro</span>
+    <div class="audio-layout">
+
+      <!-- Track list -->
+      <div class="audio-tracklist">
+          <button class="audio-track" data-src="audio/prologo.mp3" data-title="Prólogo" data-num="—" onclick="audioSelectTrack(this)">
+            <span class="audio-playing-bars"><span></span><span></span><span></span></span>
+            <span class="audio-track-num">—</span>
+            <span class="audio-track-name">Prólogo</span>
+            <span class="audio-track-dur">—:——</span>
+          </button>
+          <button class="audio-track" data-src="audio/capitulo-01.mp3" data-title="La olvidada ciudad de Santiago" data-num="Cap. I" onclick="audioSelectTrack(this)">
+            <span class="audio-playing-bars"><span></span><span></span><span></span></span>
+            <span class="audio-track-num">Cap. I</span>
+            <span class="audio-track-name">La olvidada ciudad de Santiago</span>
+            <span class="audio-track-dur">—:——</span>
+          </button>
+          <button class="audio-track" data-src="audio/capitulo-02.mp3" data-title="Bajo tierra" data-num="Cap. II" onclick="audioSelectTrack(this)">
+            <span class="audio-playing-bars"><span></span><span></span><span></span></span>
+            <span class="audio-track-num">Cap. II</span>
+            <span class="audio-track-name">Bajo tierra</span>
+            <span class="audio-track-dur">—:——</span>
+          </button>
+          <button class="audio-track" data-src="audio/capitulo-03.mp3" data-title="El gran apagón" data-num="Cap. III" onclick="audioSelectTrack(this)">
+            <span class="audio-playing-bars"><span></span><span></span><span></span></span>
+            <span class="audio-track-num">Cap. III</span>
+            <span class="audio-track-name">El gran apagón</span>
+            <span class="audio-track-dur">—:——</span>
+          </button>
+          <button class="audio-track" data-src="audio/capitulo-04.mp3" data-title="Cazar o ser cazado" data-num="Cap. IV" onclick="audioSelectTrack(this)">
+            <span class="audio-playing-bars"><span></span><span></span><span></span></span>
+            <span class="audio-track-num">Cap. IV</span>
+            <span class="audio-track-name">Cazar o ser cazado</span>
+            <span class="audio-track-dur">—:——</span>
+          </button>
+          <button class="audio-track" data-src="audio/capitulo-05.mp3" data-title="La suerte del Roto" data-num="Cap. V" onclick="audioSelectTrack(this)">
+            <span class="audio-playing-bars"><span></span><span></span><span></span></span>
+            <span class="audio-track-num">Cap. V</span>
+            <span class="audio-track-name">La suerte del Roto</span>
+            <span class="audio-track-dur">—:——</span>
+          </button>
+          <button class="audio-track" data-src="audio/capitulo-06.mp3" data-title="El peso de la superficie" data-num="Cap. VI" onclick="audioSelectTrack(this)">
+            <span class="audio-playing-bars"><span></span><span></span><span></span></span>
+            <span class="audio-track-num">Cap. VI</span>
+            <span class="audio-track-name">El peso de la superficie</span>
+            <span class="audio-track-dur">—:——</span>
+          </button>
+          <button class="audio-track" data-src="audio/capitulo-07.mp3" data-title="Sobre los hombros" data-num="Cap. VII" onclick="audioSelectTrack(this)">
+            <span class="audio-playing-bars"><span></span><span></span><span></span></span>
+            <span class="audio-track-num">Cap. VII</span>
+            <span class="audio-track-name">Sobre los hombros</span>
+            <span class="audio-track-dur">—:——</span>
+          </button>
+          <button class="audio-track" data-src="audio/capitulo-08.mp3" data-title="El secreto de los sabios" data-num="Cap. VIII" onclick="audioSelectTrack(this)">
+            <span class="audio-playing-bars"><span></span><span></span><span></span></span>
+            <span class="audio-track-num">Cap. VIII</span>
+            <span class="audio-track-name">El secreto de los sabios</span>
+            <span class="audio-track-dur">—:——</span>
+          </button>
+      </div>
+
+      <!-- Player -->
+      <div class="audio-player">
+        <div>
+          <span class="audio-player-chapter" id="ap-chapter">Selecciona un capítulo</span>
+          <div class="audio-player-title" id="ap-title">—</div>
+        </div>
+
+        <div class="audio-progress-wrap">
+          <div class="audio-progress-bar" id="ap-bar" onclick="audioSeek(event)">
+            <div class="audio-progress-fill" id="ap-fill"></div>
+          </div>
+          <div class="audio-progress-times">
+            <span id="ap-current">0:00</span>
+            <span id="ap-duration">0:00</span>
+          </div>
+        </div>
+
+        <div class="audio-controls">
+          <button class="audio-btn" onclick="audioPrev()" title="Anterior">&#9664;&#9664;</button>
+          <button class="audio-btn play-btn" id="ap-playbtn" onclick="audioToggle()">&#9654; Play</button>
+          <button class="audio-btn" onclick="audioNext()" title="Siguiente">&#9654;&#9654;</button>
+          <button class="audio-btn" id="ap-speed" onclick="audioCycleSpeed()">1×</button>
+        </div>
+
+        <p class="audio-no-file" id="ap-notice">Coloca los archivos MP3 en la carpeta <code>audio/</code></p>
+
+        <!-- Hidden native audio element -->
+        <audio id="ap-audio" preload="none"></audio>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- ─── FOOTER ─── -->
 <footer id="footer">
   <div class="footer-rule"></div>
@@ -1329,6 +1753,7 @@ section {
 <div id="fab">
   <button class="fab-btn" onclick="scrollToSection('indice')">↑ Índice</button>
   <button class="fab-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">Inicio</button>
+  <button class="fab-btn fab-audio" onclick="scrollToSection('audiolibro')">♪ Audio</button>
 </div>
 
 <script>
@@ -1380,8 +1805,8 @@ window.addEventListener('scroll', () => {
     var sy = window.scrollY;
     var ch = cover.offsetHeight;
 
-    // La imagen queda fija para evitar cortes del título inferior.
-    img.style.transform = 'none';
+    // Parallax — image drifts up at 0.38x scroll speed
+    img.style.transform = 'translateY(' + (sy * 0.38) + 'px)';
 
     // Fade — starts at 15% of cover height, gone by 80%
     var start = ch * 0.15;
@@ -1396,6 +1821,143 @@ window.addEventListener('scroll', () => {
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update, { passive: true });
   update();
+}());
+
+
+// ═══════════════════════════════════════════
+// AUDIO PLAYER
+// ═══════════════════════════════════════════
+(function () {
+  var audio     = document.getElementById('ap-audio');
+  var fill      = document.getElementById('ap-fill');
+  var bar       = document.getElementById('ap-bar');
+  var curEl     = document.getElementById('ap-current');
+  var durEl     = document.getElementById('ap-duration');
+  var playBtn   = document.getElementById('ap-playbtn');
+  var titleEl   = document.getElementById('ap-title');
+  var chapterEl = document.getElementById('ap-chapter');
+  var speedBtn  = document.getElementById('ap-speed');
+  var notice    = document.getElementById('ap-notice');
+  var tracks    = document.querySelectorAll('.audio-track');
+
+  var currentIdx = -1;
+  var speeds     = [1, 1.25, 1.5, 2];
+  var speedIdx   = 0;
+  var isPlaying  = false;
+
+  function fmt(s) {
+    if (isNaN(s) || !isFinite(s)) return '0:00';
+    var m = Math.floor(s / 60);
+    var sec = Math.floor(s % 60);
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  function setActiveTrack(idx) {
+    tracks.forEach(function(t, i) {
+      t.classList.toggle('active', i === idx);
+      t.classList.remove('playing');
+    });
+    currentIdx = idx;
+    var t = tracks[idx];
+    titleEl.textContent   = t.dataset.title;
+    chapterEl.textContent = t.dataset.num === '—' ? 'Prólogo' : t.dataset.num;
+    audio.src = t.dataset.src;
+    audio.load();
+    fill.style.width = '0%';
+    curEl.textContent = '0:00';
+    durEl.textContent = '0:00';
+    notice.style.display = 'none';
+  }
+
+  function setPlaying(state) {
+    isPlaying = state;
+    playBtn.innerHTML = state ? '&#9646;&#9646; Pausa' : '&#9654; Play';
+    if (currentIdx >= 0) {
+      tracks[currentIdx].classList.toggle('playing', state);
+    }
+  }
+
+  // Public functions called by HTML
+  window.audioSelectTrack = function(btn) {
+    var idx = Array.prototype.indexOf.call(tracks, btn);
+    if (idx === currentIdx) {
+      audioToggle();
+      return;
+    }
+    setActiveTrack(idx);
+    audio.play().then(function() { setPlaying(true); }).catch(function(){});
+  };
+
+  window.audioToggle = function() {
+    if (currentIdx < 0) {
+      setActiveTrack(0);
+    }
+    if (audio.paused) {
+      audio.play().then(function() { setPlaying(true); }).catch(function(){});
+    } else {
+      audio.pause();
+      setPlaying(false);
+    }
+  };
+
+  window.audioPrev = function() {
+    var idx = Math.max(0, currentIdx <= 0 ? 0 : currentIdx - 1);
+    setActiveTrack(idx);
+    audio.play().then(function() { setPlaying(true); }).catch(function(){});
+  };
+
+  window.audioNext = function() {
+    var idx = Math.min(tracks.length - 1, currentIdx < 0 ? 0 : currentIdx + 1);
+    setActiveTrack(idx);
+    audio.play().then(function() { setPlaying(true); }).catch(function(){});
+  };
+
+  window.audioCycleSpeed = function() {
+    speedIdx = (speedIdx + 1) % speeds.length;
+    var s = speeds[speedIdx];
+    audio.playbackRate = s;
+    speedBtn.textContent = s + '×';
+    speedBtn.classList.toggle('speed-active', s !== 1);
+  };
+
+  window.audioSeek = function(e) {
+    if (!audio.duration) return;
+    var rect = bar.getBoundingClientRect();
+    var pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    audio.currentTime = pct * audio.duration;
+  };
+
+  // Audio events
+  audio.addEventListener('timeupdate', function() {
+    if (!audio.duration) return;
+    var pct = (audio.currentTime / audio.duration) * 100;
+    fill.style.width = pct + '%';
+    curEl.textContent = fmt(audio.currentTime);
+  });
+
+  audio.addEventListener('loadedmetadata', function() {
+    durEl.textContent = fmt(audio.duration);
+    // Update track duration display
+    if (currentIdx >= 0) {
+      tracks[currentIdx].querySelector('.audio-track-dur').textContent = fmt(audio.duration);
+    }
+  });
+
+  audio.addEventListener('ended', function() {
+    setPlaying(false);
+    // Auto-advance to next track
+    if (currentIdx < tracks.length - 1) {
+      setActiveTrack(currentIdx + 1);
+      audio.play().then(function() { setPlaying(true); }).catch(function(){});
+    }
+  });
+
+  audio.addEventListener('error', function() {
+    notice.style.display = 'block';
+    notice.textContent = 'Archivo no encontrado. Verifica la carpeta audio/';
+    setPlaying(false);
+  });
+
 }());
 
 </script>
